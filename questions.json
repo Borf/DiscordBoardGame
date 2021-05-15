@@ -1,0 +1,82 @@
+{
+	"hard": [
+		{
+			"q": "How much total HP does Wildness Lunatic have?",
+			"a": [ "60000000", "60m", "60kk" ]
+		},
+		{
+			"q": "Fill in the blanks, for Chimera card: When taking physical damage, has a 3% chance to poison the enemy. When equipped by an Assassin, poison chance increases by __%.",
+			"a": [ "12" ]
+		},
+		{
+			"q": "If 5 Rough Oridecon is equals to 1 Oridecon, how much Elunium in total do you need to get an equipment to +10 from 0 using Safe Refine?",
+			"a": [ "194" ]
+		},
+		{
+			"q": "When our current guildie Vivian moved to Final guild, she was a Warlock main, what is now her favourite colour?",
+			"a": [ "glitter" ]
+		}
+	],
+	"easy": [
+		{
+			"q": "Which MVP will you find in Payon 2F?",
+			"a": [ "Moonlight Flower" ]
+		},
+		{
+			"q": "What Mini-MVP with \"Hide\" skill will you find in Prontera South Gate?",
+			"a": [ "Smokie" ]
+		},
+		{
+			"q": "What is the 4th job for Royal Guards?",
+			"a": [ "Divine Avenger", "DA" ]
+		},
+		{
+			"q": "Aside from Priest class, give another class that has \"Heal\" skill",
+			"a": [ "Paladin", "Monk", "Shura", "Crusader" ]
+		},
+		{
+			"q": "What gemstone is used when using \"Resurrection\" skill?",
+			"a": [ "Blue Gemstone" ]
+		},
+		{
+			"q": "Which Team Sun guild took Luminary's castle recently?",
+			"a": [ "Ursidae" ]
+		},
+		{
+			"q": "What country is Chesirely from?",
+			"a": [ "Hungary" ]
+		},
+		{
+			"q": "What is Minnegard's original class when she first started in ROM?",
+			"a": [ "Whitesmith" ]
+		},
+		{
+			"q": "What is Raman's first name (irl, not ingame)",
+			"a": [ "Raman" ]
+		},
+		{
+			"q": "Runswithbows is from which European country?",
+			"a": [ "Greece" ]
+		},
+		{
+			"q": "Aside from Final, which other Team Sun guild has aided Luminary the most, in WoEs?",
+			"a": [ "Solaris" ]
+		},
+		{
+			"q": "Which guild did Dezoba come from before moving into his current guild now?",
+			"a": [ "Germany" ]
+		},
+		{
+			"q": "Which guildmember missed his train stop before because of War of Crystals?",
+			"a": [ "Meltdowner" ]
+		},
+		{
+			"q": "Which guildmember is almost always drunk when playing GvG",
+			"a": [ "Maderpader" ]
+		},
+		{
+			"q": "Which guildmember is actually playing on Daydream's old account but just renamed it?",
+			"a": [ "Syf" ]
+		}
+	]
+}

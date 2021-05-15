@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <title>Luminarious Monopoly</title>
+    <style>
+        .list-group-item {
+            background-color: transparent;
+            border-top: 1px solid #ddd;
+            border-radius: 0;
+            color: #fff;
+        }
+
+        #round {
+            font-size: 2em;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+            width: 150px;
+        }
+    </style>
+    <script>
+        var round = 1;
+        var players = [];
+        var xValues = [114, 210, 305, 402, 498, 594, 690, 788, 882]
+        var yValues = [240, 338, 435, 530, 627]
+        var modal, correct, incorrect;
+
+        var positions = [
+            [260, 332],
+            [xValues[3], yValues[1]],
+            [xValues[3], yValues[0]],
+            [xValues[4], yValues[0]],
+            [xValues[5], yValues[0]],
+            [xValues[6], yValues[0]],
+            [xValues[7], yValues[0]],
+            [xValues[8], yValues[0]],
+            [xValues[8], yValues[1]],
+            [xValues[8], yValues[2]],
+            [xValues[8], yValues[3]],
+            [xValues[8], yValues[4]],
+            [xValues[7], yValues[4]],
+            [xValues[6], yValues[4]],
+            [xValues[6], yValues[3]],
+            [xValues[5], yValues[3]],
+            [xValues[4], yValues[3]],
+            [xValues[4], yValues[4]],
+            [xValues[3], yValues[4]],
+            [xValues[2], yValues[4]],
+            [xValues[1], yValues[4]],
+            [xValues[1], yValues[3]],
+            [xValues[0], yValues[3]],
+            [xValues[0], yValues[2]],
+            [xValues[0], yValues[1]],
+            [260, 332],
+        ]
+        var ws;
+        var timerVar = null;
+
+        $(function () {
+            ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/ws");
+            ws.onmessage = function (msg) {
+                var packet = JSON.parse(msg.data);
+                console.log(packet);
+                if (!packet.msg)
+                    return;
+
+                if (packet.msg == "init") {
+                    players = packet.players;
+                    for (var i in players) {
+                        var pos = positions[players[i].Position];
+                        var p = $('<img src="' + players[i].Avatar + '" style="position: relative; left: ' + (pos[0] - 32) + 'px; top: ' + (pos[1] - 32) + 'px; width: 64px; height: 64px; margin-right: -64px;">');
+                        $("#players").append(p);
+                        players[i].el = p;
+                    }
+                }
+                if (packet.msg == "spawn") {
+                    var pos = positions[packet.player.Position];
+                    var p = $('<img src="' + packet.player.Avatar + '" style="position: relative; left: ' + (pos[0] - 32) + 'px; top: ' + (pos[1] - 32) + 'px; width: 64px; height: 64px; margin-right: -64px;">');
+                    $("#players").append(p);
+
+                    players.push({
+                        Name: packet.player.Name,
+                        Position: packet.player.Position,
+                        el: p
+                    });
+                }
+                if (packet.msg == "roll") {
+                    for (var i in players) {
+                        if (players[i].Name == packet.Name) {
+                            var ii = i;
+                            rollDie(packet.Roll);
+                            setTimeout(function () {
+                                hideDie();
+                                movePlayer(ii, packet.Roll);
+                            }, 4000);
+                        }
+                    }
+                }
+                if (packet.msg == "round") {
+                    $("#round").html("Round " + packet.Round)
+                }
+                if (packet.msg == "question") {
+                    $("#questiontext").text(packet.Text);
+                    $("#timer").text("20");
+                    modal.show();
+                    var time = 19;
+                    timerVar = setInterval(function () {
+                        $("#timer").text(time + "");
+                        time--;
+                    }, 1000);
+                }
+                if (packet.msg == "questionhide") {
+                    modal.hide();
+                    clearInterval(timerVar);
+                }
+                if (packet.msg == "correct") {
+                    correct.show();
+                }
+                if (packet.msg == "correcthide") {
+                    correct.hide();
+                }
+                if (packet.msg == "incorrect") {
+                    $("#correctanswer").text(packet.Answer);
+                    incorrect.show();
+                }
+                if (packet.msg == "incorrecthide") {
+                    incorrect.hide();
+                }
+            }
+        });
+
+
+        function rollDie(i) {
+            $("#die").attr("src", "die" + i + ".gif?" + Math.random());
+            $("#die").css("display", "inline");
+        }
+        function hideDie() {
+            $("#die").css("display", "none");
+        }
+
+        function movePlayer(i, amount) {
+            if (amount == 0)
+                return;
+            players[i].Position++;
+            var pos = positions[players[i].Position];
+            players[i].el.animate({ left: (pos[0] - 32) + "px", top: (pos[1] - 32) + "px" }, 500, function () { movePlayer(i, amount - 1); });
+        }
+
+    </script>
+</head>
+<body style="width: 100%; height: 100%; ">
+    <div id="board" style="width: 1283px; height: 732px; background-size: cover; background-image:url('board.png'); margin-left: auto; margin-right: auto; position:relative;">
+        <div id="players" style="position: relative; top: 0px; left: 0px"></div>
+        <img id="die" style="position: relative; width: 498px; height: 494px; margin-right: -498px; margin-bottom: -494px; left: 400px; top: 125px; display:none">
+        <div style="position: relative; top: 125px; left: 1000px; width: 250px;">
+            <ul class="list-group">
+                <li class="list-group-item text-dark">Land on the normal poring box and you're safe</li>
+                <li class="list-group-item text-dark">Land on a questionmark poring box and you get a question. Answer it on discord in time!</li>
+                <li class="list-group-item text-dark">Land on a golden poring and take a drink!</li>
+                <li class="list-group-item text-dark">Type !roll in discord to roll the die</li>
+            </ul>
+            <div id="round">Round 1</div>
+        </div>
+    </div>
+
+    <div id="myModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Question time!</h5>
+                </div>
+                <div class="modal-body">
+                    <br />
+                    <p id="questiontext">What is the velocity of light?</p>
+                    <br />
+                    <p id="timer"></p>
+                </div>
+                <div class="modal-footer">Type your answer on discord</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="correctModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Correct!</h5>
+                </div>
+                <div class="modal-body">
+                    <img src="correct.gif" />
+                </div>
+                <div class="modal-footer">You are the best</div>
+            </div>
+        </div>
+    </div>
+    <div id="incorrectModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Time for a drink!</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="correctanswer"></p>
+                    <img src="drink.gif" />
+                </div>
+                <div class="modal-footer">You are the best</div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+    <script>
+        modal = new bootstrap.Modal(document.getElementById("myModal"));
+        correct = new bootstrap.Modal(document.getElementById("correctModal"));
+        incorrect = new bootstrap.Modal(document.getElementById("incorrectModal"));
+    </script>
+</body>
+</html>
